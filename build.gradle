@@ -32,6 +32,17 @@ dependencies {
         exclude module: "jansi"
     }
 
+    compile("org.grails:grails-web:$grailsVersion") {
+        exclude group: "taglibs"
+        exclude group: "commons-fileupload"
+        exclude group: "xpp3"
+        exclude group: "javax.servlet"
+        exclude group: "opensymphony"
+        exclude group: "commons-el"
+        exclude group: "junit"
+        exclude group: "org.springframework"
+    }
+
     compile("org.grails:grails-plugin-datasource:$grailsVersion") {
         exclude group: "hsqldb"
     }
