@@ -1,6 +1,7 @@
 package metridoc.tool.gorm
 
 import groovy.sql.Sql
+import metridoc.core.tools.ConfigTool
 import spock.lang.Specification
 
 import javax.sql.DataSource
@@ -11,7 +12,7 @@ import javax.sql.DataSource
  */
 class GormToolSpec extends Specification {
 
-    def tool = new GormTool()
+    def tool = new GormTool(embedded: true)
 
     void "enableGorm should fail on more than one call"() {
         when:
@@ -40,6 +41,32 @@ class GormToolSpec extends Specification {
         def total = sql.firstRow("select count(*) as total from user").total
 
         then:
+        noExceptionThrown()
+        total == 1
+    }
+
+    void "test gorm with dataSource properties"() {
+        setup:
+        tool.embedded = false
+        tool.includeTool(ConfigTool)
+        ConfigObject configObject = tool.binding.config
+        configObject.dataSource.driverClassName = "org.h2.Driver"
+        configObject.dataSource.username = "sa"
+        configObject.dataSource.password = ""
+        configObject.dataSource.url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+        tool.enableGorm(User)
+        def dataSource = tool.applicationContext.getBean(DataSource)
+        def sql = new Sql(dataSource)
+        def user = new User(name: "joe", age: 7)
+
+        when:
+        User.withTransaction {
+            user.save(flush: true)
+        }
+        def total = sql.firstRow("select count(*) as total from user").total
+
+        then:
+        dataSource.connection.metaData.getURL().startsWith("jdbc:h2:mem:devDb")
         noExceptionThrown()
         total == 1
     }

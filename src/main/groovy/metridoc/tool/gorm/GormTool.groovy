@@ -1,8 +1,10 @@
 package metridoc.tool.gorm
 
-import groovy.text.SimpleTemplateEngine
+import groovy.text.XmlTemplateEngine
 import groovy.util.logging.Slf4j
+import metridoc.core.tools.ConfigTool
 import metridoc.core.tools.DefaultTool
+import metridoc.utils.DataSourceConfigUtil
 import org.apache.commons.lang.StringUtils
 import org.springframework.context.ApplicationContext
 import org.springframework.context.support.FileSystemXmlApplicationContext
@@ -17,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 class GormTool extends DefaultTool {
     ApplicationContext applicationContext
     private final ran = new AtomicBoolean(false)
-
+    boolean embedded
     /**
      * This method can only be called once, subsequent calls throw an
      * IllegalStateException
@@ -26,6 +28,7 @@ class GormTool extends DefaultTool {
      * @param entities entities to add
      */
     void enableGorm(Class... entities) {
+        includeTool(ConfigTool)
         if (ran.get()) {
             throw new IllegalStateException("enableGorm cannot be called more than once")
         }
@@ -48,13 +51,20 @@ class GormTool extends DefaultTool {
         packagesAsString = StringUtils.chop(packagesAsString) //remove last comma
 
         def stream = ClassUtils.classLoader.getResourceAsStream("gormToolContext.xml")
-        def engine = new SimpleTemplateEngine()
+        def engine = new XmlTemplateEngine()
         def template = engine.createTemplate(stream.newReader())
 
 
         def file = File.createTempFile("gormToolContext.xml", null)
+        def config = binding.config
+        def hibernateProperties = DataSourceConfigUtil.getHibernatePoperties(config)
+        hibernateProperties.remove("hibernate.current_session_context_class")
+        def dataSourceProperties = DataSourceConfigUtil.getDataSourceProperties(config)
         template.make([
-                gormToolBasePackage: packagesAsString
+                gormToolBasePackage: packagesAsString,
+                embedded: embedded,
+                hibernateProperties: hibernateProperties,
+                dataSourceProperties: dataSourceProperties
         ]).writeTo(file.newWriter("utf-8"))
         file.deleteOnExit()
         applicationContext = new FileSystemXmlApplicationContext(file.toURI().toURL().toString())
