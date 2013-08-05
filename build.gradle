@@ -1,0 +1,56 @@
+apply plugin: "groovy"
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        url "http://jcenter.bintray.com/"
+    }
+    maven {
+        url "http://dl.bintray.com/upennlib/metridoc"
+    }
+}
+
+def grailsVersion = "2.2.3"
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.0.8',
+            'com.github.metridoc:metridoc-job-core:0.8-SNAPSHOT',
+            "org.grails:grails-core:$grailsVersion",
+            "org.grails:grails-plugin-domain-class:$grailsVersion",
+            "org.grails:grails-spring:$grailsVersion"
+
+    compile("org.grails:grails-hibernate:$grailsVersion") {
+        exclude module: "hibernate-ehcache"
+        exclude module: "liquibase-core"
+    }
+
+    compile("org.grails:grails-bootstrap:$grailsVersion") {
+        exclude group: "org.codehaus.gant"
+        exclude group: "org.apache.ant"
+        exclude module: "jline"
+        exclude module: "jna"
+        exclude module: "jansi"
+    }
+
+    compile("org.grails:grails-web:$grailsVersion") {
+        exclude group: "taglibs"
+        exclude group: "commons-fileupload"
+        exclude group: "xpp3"
+        exclude group: "javax.servlet"
+        exclude group: "opensymphony"
+        exclude group: "commons-el"
+        exclude group: "junit"
+        exclude group: "org.springframework"
+    }
+
+    compile("org.grails:grails-plugin-datasource:$grailsVersion") {
+        exclude group: "hsqldb"
+    }
+
+    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}
