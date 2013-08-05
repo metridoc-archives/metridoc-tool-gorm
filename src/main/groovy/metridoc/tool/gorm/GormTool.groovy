@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 @Slf4j
 class GormTool extends DefaultTool {
     ApplicationContext applicationContext
-    private final ran = new AtomicBoolean(false)
+    final ran = new AtomicBoolean(false)
     boolean embedded
     /**
      * This method can only be called once, subsequent calls throw an
@@ -27,10 +27,10 @@ class GormTool extends DefaultTool {
      * adds entities and boots up gorm
      * @param entities entities to add
      */
-    void enableGorm(Class... entities) {
+    void enableGormFor(Class... entities) {
         includeTool(ConfigTool)
         if (ran.get()) {
-            throw new IllegalStateException("enableGorm cannot be called more than once")
+            throw new IllegalStateException("enableGormFor cannot be called more than once")
         }
 
         ran.getAndSet(true)
