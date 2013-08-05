@@ -11,7 +11,12 @@ repositories {
     }
 }
 
+project.version = "0.1-SNAPSHOT"
+project.group = "com.github.metridoc"
+sourceCompatibility = "1.6"
+targetCompatibility = "1.6"
 def grailsVersion = "2.2.3"
+
 
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.0.8',
