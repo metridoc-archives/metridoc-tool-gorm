@@ -16,13 +16,13 @@ class GormToolSpec extends Specification {
 
     void "enableGorm should fail on more than one call"() {
         when:
-        tool.enableGorm(User)
+        tool.enableGormFor(User)
 
         then:
         noExceptionThrown()
 
         when:
-        tool.enableGorm(User)
+        tool.enableGormFor(User)
 
         then:
         thrown(IllegalStateException)
@@ -30,7 +30,7 @@ class GormToolSpec extends Specification {
 
     void "test basic gorm operations"() {
         setup:
-        tool.enableGorm(User)
+        tool.enableGormFor(User)
         def sql = new Sql(tool.applicationContext.getBean(DataSource))
         def user = new User(name: "joe", age: 7)
 
@@ -54,7 +54,7 @@ class GormToolSpec extends Specification {
         configObject.dataSource.username = "sa"
         configObject.dataSource.password = ""
         configObject.dataSource.url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
-        tool.enableGorm(User)
+        tool.enableGormFor(User)
         def dataSource = tool.applicationContext.getBean(DataSource)
         def sql = new Sql(dataSource)
         def user = new User(name: "joe", age: 7)
@@ -62,6 +62,7 @@ class GormToolSpec extends Specification {
         when:
         User.withTransaction {
             user.save(flush: true)
+            user.errors.fieldErrorCount
         }
         def total = sql.firstRow("select count(*) as total from user").total
 
