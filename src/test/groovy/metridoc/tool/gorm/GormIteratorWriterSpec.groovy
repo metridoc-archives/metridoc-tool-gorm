@@ -12,7 +12,7 @@ import static metridoc.writers.WrittenRecordStat.Status.*
  * @author Tommy Barker
  */
 class GormIteratorWriterSpec extends Specification {
-    def gTool = new GormTool(embedded: true)
+    def gTool = new GormTool(mergeMetridocConfig: false, embeddedDataSource: true)
     def writer = new GormIteratorWriter(gormClass: GormHelper, gormTool: gTool)
 
     void "test basic entity writing workflow"() {

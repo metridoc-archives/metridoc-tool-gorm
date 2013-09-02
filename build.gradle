@@ -37,38 +37,13 @@ def grailsVersion = "2.2.3"
 
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.0.8',
-            'com.github.metridoc:metridoc-job-core:0.7.1',
+            'com.github.metridoc:metridoc-job-core:0.7.6',
             "org.grails:grails-core:$grailsVersion",
             "org.grails:grails-plugin-domain-class:$grailsVersion",
-            "org.grails:grails-spring:$grailsVersion"
-
-    compile("org.grails:grails-hibernate:$grailsVersion") {
-        exclude module: "hibernate-ehcache"
-        exclude module: "liquibase-core"
-    }
-
-    compile("org.grails:grails-bootstrap:$grailsVersion") {
-        exclude group: "org.codehaus.gant"
-        exclude group: "org.apache.ant"
-        exclude module: "jline"
-        exclude module: "jna"
-        exclude module: "jansi"
-    }
-
-    compile("org.grails:grails-web:$grailsVersion") {
-        exclude group: "taglibs"
-        exclude group: "commons-fileupload"
-        exclude group: "xpp3"
-        exclude group: "javax.servlet"
-        exclude group: "opensymphony"
-        exclude group: "commons-el"
-        exclude group: "junit"
-        exclude group: "org.springframework"
-    }
-
-    compile("org.grails:grails-plugin-datasource:$grailsVersion") {
-        exclude group: "hsqldb"
-    }
+            "org.grails:grails-spring:$grailsVersion",
+            "org.grails:grails-hibernate:$grailsVersion",
+            "org.grails:grails-web:$grailsVersion",
+            "org.grails:grails-plugin-datasource:$grailsVersion"
 
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
 }

@@ -3,6 +3,7 @@ package metridoc.tool.gorm
 import groovy.text.XmlTemplateEngine
 import groovy.util.logging.Slf4j
 import metridoc.core.tools.ConfigTool
+import metridoc.core.tools.DataSourceTool
 import metridoc.core.tools.DefaultTool
 import metridoc.utils.DataSourceConfigUtil
 import org.apache.commons.lang.StringUtils
@@ -16,10 +17,10 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @author Tommy Barker
  */
 @Slf4j
-class GormTool extends DefaultTool {
+class GormTool extends DataSourceTool {
     ApplicationContext applicationContext
     final ran = new AtomicBoolean(false)
-    boolean embedded
+
     /**
      * This method can only be called once, subsequent calls throw an
      * IllegalStateException
@@ -28,7 +29,11 @@ class GormTool extends DefaultTool {
      * @param entities entities to add
      */
     void enableGormFor(Class... entities) {
-        includeTool(ConfigTool)
+        if(!binding.hasVariable("configTool")) {
+            includeTool(mergeMetridocConfig: mergeMetridocConfig, ConfigTool)
+            init()
+        }
+
         if (ran.get()) {
             throw new IllegalStateException("enableGormFor cannot be called more than once")
         }
@@ -62,7 +67,7 @@ class GormTool extends DefaultTool {
         def dataSourceProperties = DataSourceConfigUtil.getDataSourceProperties(config)
         template.make([
                 gormToolBasePackage: packagesAsString,
-                embedded: embedded,
+//                embedded: embeddedDataSource,
                 hibernateProperties: hibernateProperties,
                 dataSourceProperties: dataSourceProperties
         ]).writeTo(file.newWriter("utf-8"))

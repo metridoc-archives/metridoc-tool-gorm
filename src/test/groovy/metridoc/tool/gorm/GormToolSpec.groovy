@@ -12,7 +12,7 @@ import javax.sql.DataSource
  */
 class GormToolSpec extends Specification {
 
-    def tool = new GormTool(embedded: true)
+    def tool = new GormTool(mergeMetridocConfig: false,  embeddedDataSource: true)
 
     void "enableGorm should fail on more than one call"() {
         when:
@@ -47,13 +47,12 @@ class GormToolSpec extends Specification {
 
     void "test gorm with dataSource properties"() {
         setup:
-        tool.embedded = false
-        tool.includeTool(ConfigTool)
+        tool.includeTool(mergeMetridocConfig: false, ConfigTool)
         ConfigObject configObject = tool.binding.config
         configObject.dataSource.driverClassName = "org.h2.Driver"
         configObject.dataSource.username = "sa"
         configObject.dataSource.password = ""
-        configObject.dataSource.url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+        configObject.dataSource.url = "jdbc:h2:mem:devDbManual;MVCC=TRUE;LOCK_TIMEOUT=10000"
         tool.enableGormFor(User)
         def dataSource = tool.applicationContext.getBean(DataSource)
         def sql = new Sql(dataSource)

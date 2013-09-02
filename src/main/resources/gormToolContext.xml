@@ -77,14 +77,9 @@
         <constructor-arg index="1" value="#{grailsApplication.config}"/>
     </bean>
 
-    <gsp:scriptlet>if (embedded) {</gsp:scriptlet>
-        <jdbc:embedded-database id="dataSource" type="H2"/>
-    <gsp:scriptlet>} else {</gsp:scriptlet>
-        <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
-            <gsp:scriptlet>dataSourceProperties.each {key, value -> </gsp:scriptlet>
-            <property name="${key}" value="${value}" />
-            <gsp:scriptlet>}</gsp:scriptlet>
-        </bean>
-    <gsp:scriptlet>}</gsp:scriptlet>
-
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <gsp:scriptlet>dataSourceProperties.each {key, value -></gsp:scriptlet>
+        <property name="${key}" value="${value}"/>
+        <gsp:scriptlet>}</gsp:scriptlet>
+    </bean>
 </beans>
