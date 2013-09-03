@@ -27,7 +27,7 @@ repositories {
     }
 }
 
-version = "0.2"
+version = "0.2.1"
 group = "com.github.metridoc"
 archivesBaseName = "metridoc-tool-gorm"
 sourceCompatibility = "1.6"
