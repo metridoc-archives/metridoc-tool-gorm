@@ -39,14 +39,21 @@ dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.0.8',
             'com.github.metridoc:metridoc-job-core:0.7.6',
             "org.grails:grails-core:$grailsVersion",
-            "org.grails:grails-plugin-domain-class:$grailsVersion",
             "org.grails:grails-spring:$grailsVersion",
-            "org.grails:grails-hibernate:$grailsVersion",
             "org.grails:grails-web:$grailsVersion",
             "org.grails:grails-plugin-datasource:$grailsVersion"
 
+    compile("org.grails:grails-plugin-domain-class:$grailsVersion") {
+        exclude module: "persistence-api"
+    }
+
+    compile("org.grails:grails-hibernate:$grailsVersion") {
+        exclude module: "persistence-api"
+    }
+
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
 }
+
 
 enableMaven { pom ->
     pom.project {
@@ -76,6 +83,20 @@ enableMaven { pom ->
                 name = 'Thomas Barker'
                 email = 'tbarker@pobox.upenn.edu'
             }
+        }
+    }
+
+    pom.whenConfigured {pomToConfigure ->
+        pomToConfigure.dependencies.each { dep ->
+            def classLoader = dep.getClass().classLoader
+            def Exclusion = classLoader.loadClass("org.apache.maven.model.Exclusion")
+            def exclusionToAdd = Exclusion.newInstance(
+                    artifactId: "persistence-api",
+                    groupId: "javax.persistence"
+            )
+
+
+            dep.exclusions.add(exclusionToAdd)
         }
     }
 }
