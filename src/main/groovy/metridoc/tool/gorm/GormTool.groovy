@@ -4,7 +4,6 @@ import groovy.text.XmlTemplateEngine
 import groovy.util.logging.Slf4j
 import metridoc.core.tools.ConfigTool
 import metridoc.core.tools.DataSourceTool
-import metridoc.core.tools.DefaultTool
 import metridoc.utils.DataSourceConfigUtil
 import org.apache.commons.lang.StringUtils
 import org.springframework.context.ApplicationContext
@@ -29,7 +28,7 @@ class GormTool extends DataSourceTool {
      * @param entities entities to add
      */
     void enableGormFor(Class... entities) {
-        if(!binding.hasVariable("configTool")) {
+        if (!binding.hasVariable("configTool")) {
             includeTool(mergeMetridocConfig: mergeMetridocConfig, ConfigTool)
             init()
         }
@@ -67,7 +66,6 @@ class GormTool extends DataSourceTool {
         def dataSourceProperties = DataSourceConfigUtil.getDataSourceProperties(config)
         template.make([
                 gormToolBasePackage: packagesAsString,
-//                embedded: embeddedDataSource,
                 hibernateProperties: hibernateProperties,
                 dataSourceProperties: dataSourceProperties
         ]).writeTo(file.newWriter("utf-8"))
