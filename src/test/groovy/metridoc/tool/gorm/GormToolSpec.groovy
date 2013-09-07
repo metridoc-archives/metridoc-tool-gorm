@@ -1,6 +1,7 @@
 package metridoc.tool.gorm
 
 import groovy.sql.Sql
+import metridoc.core.MetridocScript
 import metridoc.core.tools.ConfigTool
 import spock.lang.Specification
 
@@ -12,7 +13,7 @@ import javax.sql.DataSource
  */
 class GormToolSpec extends Specification {
 
-    def tool = new GormTool(mergeMetridocConfig: false,  embeddedDataSource: true)
+    def tool = new GormTool(mergeMetridocConfig: false, embeddedDataSource: true)
 
     void "enableGorm should fail on more than one call"() {
         when:
@@ -69,5 +70,25 @@ class GormToolSpec extends Specification {
         dataSource.connection.metaData.getURL().startsWith("jdbc:h2:mem:devDb")
         noExceptionThrown()
         total == 1
+    }
+
+    void "test within the scope of MetridocScript"() {
+
+        when:
+        new GormToolScriptHelper().run()
+
+        then:
+        noExceptionThrown()
+    }
+}
+
+class GormToolScriptHelper extends Script {
+
+    @Override
+    def run() {
+        use(MetridocScript) {
+            def gorm = includeTool(embeddedDataSource: true, GormTool)
+            gorm.enableGormFor(User)
+        }
     }
 }
