@@ -2,6 +2,7 @@ package metridoc.tool.gorm
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.orm.hibernate.ConfigurableLocalSessionFactoryBean
+import org.codehaus.groovy.grails.orm.hibernate.HibernateGormEnhancer
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.codehaus.groovy.grails.plugins.orm.hibernate.HibernatePluginSupport
 import org.hibernate.EntityMode
@@ -31,6 +32,11 @@ public class GormEnhancingBeanPostProcessor implements InitializingBean, Applica
         }
 
         try {
+            //for whatever reason, when running within the context of MetridocScript,
+            //initialiseFinders is not found.  Doing this hack to get everything to work
+            HibernateGormEnhancer.metaClass.initialiseFinders = {
+                delegate.finders = Collections.unmodifiableList(delegate.getAllDynamicFinders())
+            }
             DomainClassGrailsPlugin.enhanceDomainClasses(application, applicationContext)
             HibernatePluginSupport.enhanceSessionFactory(sessionFactory, application, applicationContext)
         }
