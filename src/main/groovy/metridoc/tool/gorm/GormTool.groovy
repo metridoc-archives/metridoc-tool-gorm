@@ -28,6 +28,7 @@ class GormTool extends DataSourceTool {
      * @param entities entities to add
      */
     void enableGormFor(Class... entities) {
+
         if (!binding.hasVariable("configTool")) {
             includeTool(mergeMetridocConfig: mergeMetridocConfig, ConfigTool)
             init()
@@ -39,20 +40,12 @@ class GormTool extends DataSourceTool {
 
         ran.getAndSet(true)
 
-        def packages = [] as Set<String>
+        String gormBeans = ""
         entities.each { Class entityClass ->
             String name = entityClass.name
-            int index = name.lastIndexOf(".")
-            packages << name.substring(0, index)
+            gormBeans += "$name,"
         }
-
-        def packagesAsString = new String()
-
-        packages.each {
-            packagesAsString += it + ","
-        }
-
-        packagesAsString = StringUtils.chop(packagesAsString) //remove last comma
+        gormBeans = StringUtils.chop(gormBeans)
 
         def stream = ClassUtils.classLoader.getResourceAsStream("gormToolContext.xml")
         def engine = new XmlTemplateEngine()
@@ -64,8 +57,9 @@ class GormTool extends DataSourceTool {
         def hibernateProperties = DataSourceConfigUtil.getHibernatePoperties(config)
         hibernateProperties.remove("hibernate.current_session_context_class")
         def dataSourceProperties = DataSourceConfigUtil.getDataSourceProperties(config)
+        GormClassLoaderPostProcessor.gormClasses = entities as List
         template.make([
-                gormToolBasePackage: packagesAsString,
+                gormBeans: gormBeans,
                 hibernateProperties: hibernateProperties,
                 dataSourceProperties: dataSourceProperties
         ]).writeTo(file.newWriter("utf-8"))
