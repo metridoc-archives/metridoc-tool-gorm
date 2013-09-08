@@ -3,6 +3,7 @@ package metridoc.tool.gorm
 import groovy.sql.Sql
 import metridoc.core.MetridocScript
 import metridoc.core.tools.ConfigTool
+import org.springframework.util.ClassUtils
 import spock.lang.Specification
 
 import javax.sql.DataSource
@@ -79,6 +80,25 @@ class GormToolSpec extends Specification {
 
         then:
         noExceptionThrown()
+    }
+
+    void "everything should work as a script"() {
+        given:
+        def scriptDir = new File("src/test/resources/testScripts")
+        def scriptFile = new File("foobar.groovy", scriptDir)
+        def shell = new GroovyShell()
+        def thread = Thread.currentThread()
+        def originalClassLoader = thread.contextClassLoader
+        thread.contextClassLoader = shell.classLoader
+
+        when:
+        shell.evaluate(scriptFile)
+
+        then:
+        noExceptionThrown()
+
+        cleanup:
+        thread.contextClassLoader = originalClassLoader
     }
 }
 

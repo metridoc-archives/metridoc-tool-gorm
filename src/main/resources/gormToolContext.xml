@@ -27,7 +27,7 @@
     <bean id="eventTriggeringInterceptor"
           class="org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor"/>
 
-    <gorm:sessionFactory base-package="${gormToolBasePackage}" data-source-ref="dataSource"
+    <gorm:sessionFactory base-package="NA" data-source-ref="dataSource"
                          message-source-ref="messageSource">
         <property name="hibernateProperties">
             <util:map>
@@ -70,6 +70,10 @@
     <bean id="gormEnhancingPostProcessor" class="metridoc.tool.gorm.GormEnhancingBeanPostProcessor">
         <property name="sessionFactory" ref="sessionFactory"/>
         <property name="application" ref="grailsApplication"/>
+    </bean>
+
+    <bean id="gormClassLoaderPostProcessor" class="metridoc.tool.gorm.GormClassLoaderPostProcessor">
+        <property name="gormBeans" value="${gormBeans}"/>
     </bean>
 
     <bean id="eventInterceptor" class="org.codehaus.groovy.grails.orm.hibernate.EventTriggeringInterceptor">
