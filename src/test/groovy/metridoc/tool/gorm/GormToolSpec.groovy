@@ -3,7 +3,6 @@ package metridoc.tool.gorm
 import groovy.sql.Sql
 import metridoc.core.MetridocScript
 import metridoc.core.tools.ConfigTool
-import org.springframework.util.ClassUtils
 import spock.lang.Specification
 
 import javax.sql.DataSource
@@ -99,6 +98,20 @@ class GormToolSpec extends Specification {
 
         cleanup:
         thread.contextClassLoader = originalClassLoader
+    }
+
+    void "lets test invalid data"() {
+        given: "empty user"
+        def user = new User()
+        tool.enableGormFor(User)
+
+        when:
+        def valid
+        User.withTransaction { valid = user.validate() }
+
+        then:
+        !valid
+        "nullable" == user.errors.getFieldError("name").code
     }
 }
 

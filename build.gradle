@@ -51,7 +51,8 @@ dependencies {
         exclude module: "persistence-api"
     }
 
-    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0',
+            'org.slf4j:slf4j-simple:1.7.5'
 }
 
 

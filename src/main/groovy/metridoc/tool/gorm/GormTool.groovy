@@ -4,6 +4,7 @@ import groovy.text.XmlTemplateEngine
 import groovy.util.logging.Slf4j
 import metridoc.core.tools.ConfigTool
 import metridoc.core.tools.DataSourceTool
+import metridoc.iterators.Iterators
 import metridoc.utils.DataSourceConfigUtil
 import org.apache.commons.lang.StringUtils
 import org.springframework.context.ApplicationContext
@@ -65,5 +66,6 @@ class GormTool extends DataSourceTool {
         ]).writeTo(file.newWriter("utf-8"))
         file.deleteOnExit()
         applicationContext = new FileSystemXmlApplicationContext(file.toURI().toURL().toString())
+        Iterators.WRITERS["gorm"] = GormIteratorWriter
     }
 }

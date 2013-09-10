@@ -3,8 +3,10 @@ package metridoc.tool.gorm
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.orm.hibernate.ConfigurableLocalSessionFactoryBean
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormEnhancer
+import org.codehaus.groovy.grails.orm.hibernate.HibernateGormValidationApi
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.codehaus.groovy.grails.plugins.orm.hibernate.HibernatePluginSupport
+import org.grails.datastore.mapping.validation.ValidationErrors
 import org.hibernate.EntityMode
 import org.hibernate.SessionFactory
 import org.hibernate.metadata.ClassMetadata
@@ -12,6 +14,7 @@ import org.springframework.beans.BeanInstantiationException
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
+import org.springframework.validation.Errors
 
 public class GormEnhancingBeanPostProcessor implements InitializingBean, ApplicationContextAware {
 
@@ -37,6 +40,14 @@ public class GormEnhancingBeanPostProcessor implements InitializingBean, Applica
             HibernateGormEnhancer.metaClass.initialiseFinders = {
                 delegate.finders = Collections.unmodifiableList(delegate.getAllDynamicFinders())
             }
+
+            //similar problem here
+            HibernateGormValidationApi.metaClass.resetErrors = { instance ->
+                def errors = new ValidationErrors(instance)
+                instance.errors = errors
+                return errors
+            }
+
             DomainClassGrailsPlugin.enhanceDomainClasses(application, applicationContext)
             HibernatePluginSupport.enhanceSessionFactory(sessionFactory, application, applicationContext)
         }

@@ -50,8 +50,13 @@ class MetridocRecordGorm implements RecordLoader {
     void populate(Record record) {
         def dataOfInterest = record.body.findAll { entityInstance.properties.keySet().contains(it.key) }
         try {
-            dataOfInterest.each {
-                entityInstance."$it.key" = it.value
+            if(entityInstance.metaClass.respondsTo(entityInstance, "populate")) {
+                entityInstance.populate(record)
+            }
+            else {
+                dataOfInterest.each {
+                    entityInstance."$it.key" = it.value
+                }
             }
             validate()
         }
