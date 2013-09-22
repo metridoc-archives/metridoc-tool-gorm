@@ -3,6 +3,7 @@ package metridoc.tool.gorm
 import grails.persistence.Entity
 import metridoc.iterators.Iterators
 import metridoc.iterators.Record
+import metridoc.service.gorm.GormService
 import spock.lang.Specification
 
 import static metridoc.writers.WrittenRecordStat.Status.*
@@ -12,21 +13,18 @@ import static metridoc.writers.WrittenRecordStat.Status.*
  * @author Tommy Barker
  */
 class GormIteratorWriterSpec extends Specification {
-    def gTool = new GormTool(mergeMetridocConfig: false, embeddedDataSource: true)
-    def writer = new GormIteratorWriter(gormClass: GormHelper, gormTool: gTool)
+    def gService = new GormService(mergeMetridocConfig: false, embeddedDataSource: true)
+
+    void setup() {
+        gService.enableGormFor(GormHelper)
+    }
 
     void "test basic entity writing workflow"() {
-        given: "some valid data"
-        def data = [
-                [foo: "asd"],
+        when: "the data is written"
+        def response = Iterators.fromMaps([foo: "asd"],
                 [foo: "sdf"],
                 [foo: "fgd"],
-                [foo: "dfgh"]
-        ]
-        def rowIterator = Iterators.toRowIterator(data)
-
-        when: "the data is written"
-        def response = writer.write(rowIterator)
+                [foo: "dfgh"]).toGormEntity(GormHelper)
 
         then: "appropriate data is returned"
         4 == response.aggregateStats[WRITTEN]
@@ -39,17 +37,14 @@ class GormIteratorWriterSpec extends Specification {
     }
 
     def "test validation errors"() {
-        given: "some invalid data"
-        def data = [
+
+        when: "data is written"
+        def response = Iterators.fromMaps(
                 [foo: "asd"],
                 [foo: "sdf"],
                 [foo: null],
                 [foo: "dfgh"]
-        ]
-        def rowIterator = Iterators.toRowIterator(data)
-
-        when: "data is written"
-        def response = writer.write(rowIterator)
+        ).toGormEntity(GormHelper)
 
         then: "three records are written and one is invalid"
         1 == response.invalidTotal
@@ -58,17 +53,14 @@ class GormIteratorWriterSpec extends Specification {
     }
 
     def "test errors"() {
-        given: "bad data"
-        def data = [
+        when: "bad data is written"
+        def response = Iterators.fromMaps(
                 [foo: "asd"],
                 [foo: "sdf"],
                 [foo: "error"],
                 [foo: "dfgh"]
-        ]
-        def rowIterator = Iterators.toRowIterator(data)
+        ).toGormEntity(GormHelper)
 
-        when: "data is written"
-        def response = writer.write(rowIterator)
         def throwables = response.fatalErrors
 
         then: "one error is recorded into the response"
