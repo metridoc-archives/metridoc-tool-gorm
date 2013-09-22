@@ -1,8 +1,9 @@
-package metridoc.tool.gorm
+package metridoc.service.gorm
 
 import groovy.sql.Sql
 import metridoc.core.MetridocScript
 import metridoc.core.tools.ConfigTool
+import metridoc.tool.gorm.User
 import spock.lang.Specification
 
 import javax.sql.DataSource
@@ -11,9 +12,9 @@ import javax.sql.DataSource
  * Created with IntelliJ IDEA on 8/1/13
  * @author Tommy Barker
  */
-class GormToolSpec extends Specification {
+class GormServiceSpec extends Specification {
 
-    def tool = new GormTool(mergeMetridocConfig: false, embeddedDataSource: true)
+    def tool = new GormService(mergeMetridocConfig: false, embeddedDataSource: true)
 
     void "enableGorm should fail on more than one call"() {
         when:
@@ -48,7 +49,7 @@ class GormToolSpec extends Specification {
 
     void "test gorm with dataSource properties"() {
         setup:
-        tool.includeTool(mergeMetridocConfig: false, ConfigTool)
+        tool.includeService(mergeMetridocConfig: false, ConfigTool)
         ConfigObject configObject = tool.binding.config
         configObject.dataSource.driverClassName = "org.h2.Driver"
         configObject.dataSource.username = "sa"
@@ -75,7 +76,7 @@ class GormToolSpec extends Specification {
     void "test within the scope of MetridocScript"() {
 
         when:
-        new GormToolScriptHelper().run()
+        new GormServiceScriptHelper().run()
 
         then:
         noExceptionThrown()
@@ -115,12 +116,12 @@ class GormToolSpec extends Specification {
     }
 }
 
-class GormToolScriptHelper extends Script {
+class GormServiceScriptHelper extends Script {
 
     @Override
     def run() {
         use(MetridocScript) {
-            def gorm = includeTool(embeddedDataSource: true, GormTool)
+            def gorm = includeService(embeddedDataSource: true, GormService)
             gorm.enableGormFor(User)
         }
     }

@@ -3,6 +3,7 @@ package metridoc.tool.gorm
 import grails.persistence.Entity
 import metridoc.core.MetridocScript
 import metridoc.iterators.Record
+import metridoc.service.gorm.GormService
 import metridoc.writers.WriteResponse
 import spock.lang.Specification
 
@@ -25,7 +26,7 @@ class MetridocRecordGormSpec extends Specification {
                     includeTool(
                             embeddedDataSource: true,
                             mergeMetridocConfig: false,
-                            GormTool
+                            GormService
                     ).enableGormFor(FooBaz)
 
                     def writer = createWriter(gormClass: FooBaz, "gorm")
