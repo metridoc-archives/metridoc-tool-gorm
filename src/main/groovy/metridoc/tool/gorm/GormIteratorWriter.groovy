@@ -2,6 +2,7 @@ package metridoc.tool.gorm
 
 import metridoc.iterators.Record
 import metridoc.iterators.RecordIterator
+import metridoc.service.gorm.GormService
 import metridoc.writers.DefaultIteratorWriter
 import metridoc.writers.WriteResponse
 
@@ -12,13 +13,21 @@ import metridoc.writers.WriteResponse
 class GormIteratorWriter extends DefaultIteratorWriter {
 
     Class gormClass
-    GormTool gormTool
+    GormService gormService
+
+    /**
+     * @deprecated
+     * @param gormTool
+     */
+    void setGormTool(GormTool gormTool) {
+        this.gormService = gormTool
+    }
 
     @Override
     WriteResponse write(RecordIterator recordIterator) {
-        if (gormTool) {
-            if (!gormTool.ran.get()) {
-                gormTool.enableGormFor(gormClass)
+        if (gormService) {
+            if (!gormService.ran.get()) {
+                gormService.enableGormFor(gormClass)
             }
         }
         assert gormClass: "gormClass must not be null"
