@@ -1,6 +1,3 @@
-apply plugin: "groovy"
-apply plugin: "metridoc"
-
 project.ext.description = "Provides tool to use gorm in metridoc jobs and scripts"
 
 
@@ -33,7 +30,8 @@ archivesBaseName = "metridoc-tool-gorm"
 sourceCompatibility = "1.6"
 targetCompatibility = "1.6"
 def grailsVersion = "2.2.3"
-
+apply plugin: "groovy"
+apply plugin: "metridoc"
 
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.0.8',
