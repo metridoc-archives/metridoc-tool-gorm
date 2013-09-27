@@ -35,7 +35,7 @@ apply plugin: "metridoc"
 
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.0.8',
-            'com.github.metridoc:metridoc-job-core:0.9.3',
+            'com.github.metridoc:metridoc-job-core:0.9.4',
             "org.grails:grails-core:$grailsVersion",
             "org.grails:grails-spring:$grailsVersion",
             "org.grails:grails-web:$grailsVersion",
