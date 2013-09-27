@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.github.metridoc:metridoc-gradle-plugin:0.2.7"
+        classpath "com.github.metridoc:metridoc-gradle-plugin:0.2.8"
     }
 }
 
