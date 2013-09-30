@@ -16,7 +16,8 @@ class GormIteratorWriterSpec extends Specification {
     def gService = new GormService(mergeMetridocConfig: false, embeddedDataSource: true)
 
     void setup() {
-        gService.enableGormFor(GormHelper)
+        gService.init()
+        gService.enableFor(GormHelper)
     }
 
     void "test basic entity writing workflow"() {

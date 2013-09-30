@@ -14,17 +14,21 @@ import javax.sql.DataSource
  */
 class GormServiceSpec extends Specification {
 
-    def tool = new GormService(mergeMetridocConfig: false, embeddedDataSource: true)
+    def service = new GormService(embeddedDataSource: true)
+
+    void setup() {
+        service.init()
+    }
 
     void "enableGorm should fail on more than one call"() {
         when:
-        tool.enableGormFor(User)
+        service.enableFor(User)
 
         then:
         noExceptionThrown()
 
         when:
-        tool.enableGormFor(User)
+        service.enableFor(User)
 
         then:
         thrown(IllegalStateException)
@@ -32,8 +36,8 @@ class GormServiceSpec extends Specification {
 
     void "test basic gorm operations"() {
         setup:
-        tool.enableGormFor(User)
-        def sql = new Sql(tool.applicationContext.getBean(DataSource))
+        service.enableFor(User)
+        def sql = new Sql(service.applicationContext.getBean(DataSource))
         def user = new User(name: "joe", age: 7)
 
         when:
@@ -49,14 +53,14 @@ class GormServiceSpec extends Specification {
 
     void "test gorm with dataSource properties"() {
         setup:
-        tool.includeService(mergeMetridocConfig: false, ConfigTool)
-        ConfigObject configObject = tool.binding.config
+        service.includeService(mergeMetridocConfig: false, ConfigTool)
+        ConfigObject configObject = service.config
         configObject.dataSource.driverClassName = "org.h2.Driver"
         configObject.dataSource.username = "sa"
         configObject.dataSource.password = ""
         configObject.dataSource.url = "jdbc:h2:mem:devDbManual;MVCC=TRUE;LOCK_TIMEOUT=10000"
-        tool.enableGormFor(User)
-        def dataSource = tool.applicationContext.getBean(DataSource)
+        service.enableFor(User)
+        def dataSource = service.applicationContext.getBean(DataSource)
         def sql = new Sql(dataSource)
         def user = new User(name: "joe", age: 7)
 
@@ -104,7 +108,7 @@ class GormServiceSpec extends Specification {
     void "lets test invalid data"() {
         given: "empty user"
         def user = new User()
-        tool.enableGormFor(User)
+        service.enableGormFor(User)
 
         when:
         def valid
