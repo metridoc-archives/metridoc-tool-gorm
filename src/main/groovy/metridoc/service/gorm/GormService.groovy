@@ -1,52 +1,39 @@
 package metridoc.service.gorm
 
 import groovy.text.XmlTemplateEngine
-import metridoc.core.tools.ConfigTool
-import metridoc.core.tools.DataSourceTool
+import metridoc.core.services.DataSourceService
 import metridoc.iterators.Iterators
 import metridoc.tool.gorm.GormClassLoaderPostProcessor
 import metridoc.tool.gorm.GormIteratorWriter
 import metridoc.utils.DataSourceConfigUtil
 import org.apache.commons.lang.StringUtils
+import org.hibernate.SessionFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.context.support.FileSystemXmlApplicationContext
 import org.springframework.util.ClassUtils
 
-import java.util.concurrent.atomic.AtomicBoolean
-
 /**
  * @author Tommy Barker
  */
-class GormService extends DataSourceTool {
+class GormService extends DataSourceService {
     ApplicationContext applicationContext
-    final ran = new AtomicBoolean(false)
 
     static {
         Iterators.WRITERS["gorm"] = GormIteratorWriter
     }
 
     /**
-     * This method can only be called once, subsequent calls throw an
-     * IllegalStateException
-     *
-     * adds entities and boots up gorm
-     * @param entities entities to add
+     * @deprecated
+     * @param classes
      */
-    void enableGormFor(Class... entities) {
+    void enableGormFor(Class... classes) {
+        enableFor(classes)
+    }
 
-        if (!binding.hasVariable("configTool")) {
-            includeTool(mergeMetridocConfig: mergeMetridocConfig, ConfigTool)
-            init()
-        }
-
-        if (ran.get()) {
-            throw new IllegalStateException("enableGormFor cannot be called more than once")
-        }
-
-        ran.getAndSet(true)
-
+    @Override
+    protected void doEnableFor(Class... classes) {
         String gormBeans = ""
-        entities.each { Class entityClass ->
+        classes.each { Class entityClass ->
             String name = entityClass.name
             gormBeans += "$name,"
         }
@@ -58,11 +45,10 @@ class GormService extends DataSourceTool {
 
 
         def file = File.createTempFile("gormToolContext.xml", null)
-        def config = binding.config
         def hibernateProperties = DataSourceConfigUtil.getHibernatePoperties(config)
         hibernateProperties.remove("hibernate.current_session_context_class")
         def dataSourceProperties = DataSourceConfigUtil.getDataSourceProperties(config)
-        GormClassLoaderPostProcessor.gormClasses = entities as List
+        GormClassLoaderPostProcessor.gormClasses = classes as List
         template.make([
                 gormBeans: gormBeans,
                 hibernateProperties: hibernateProperties,
@@ -70,6 +56,10 @@ class GormService extends DataSourceTool {
         ]).writeTo(file.newWriter("utf-8"))
         file.deleteOnExit()
         applicationContext = new FileSystemXmlApplicationContext(file.toURI().toURL().toString())
+    }
 
+    @Override
+    SessionFactory getSessionFactory() {
+        applicationContext.sessionFactory
     }
 }

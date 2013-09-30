@@ -1,5 +1,5 @@
 import grails.persistence.Entity
-import metridoc.core.MetridocScript
+import metridoc.core.services.ConfigService
 import metridoc.service.gorm.GormService
 
 args = ["--mergeMetridocConfig=false", "--embeddedDataSource"] as String[]
@@ -7,10 +7,11 @@ args = ["--mergeMetridocConfig=false", "--embeddedDataSource"] as String[]
 /**
  * @author Tommy Barker
  */
-use(MetridocScript) {
-    def gorm = includeService(GormService)
-    gorm.enableGormFor(Foo)
-}
+
+includeService(ConfigService)
+def gorm = includeService(GormService)
+gorm.enableFor(Foo)
+
 Foo.list()
 
 @Entity
