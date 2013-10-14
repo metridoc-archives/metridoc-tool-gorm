@@ -14,14 +14,6 @@ class GormIteratorWriter extends DefaultIteratorWriter {
 
     Class gormClass
 
-    /**
-     * @deprecated
-     * @param gormTool
-     */
-    void setGormTool(GormTool gormTool) {
-        this.gormService = gormTool
-    }
-
     @Override
     WriteResponse write(RecordIterator recordIterator) {
         assert gormClass: "gormClass must not be null"
