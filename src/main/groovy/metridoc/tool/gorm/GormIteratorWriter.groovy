@@ -13,7 +13,6 @@ import metridoc.writers.WriteResponse
 class GormIteratorWriter extends DefaultIteratorWriter {
 
     Class gormClass
-    GormService gormService
 
     /**
      * @deprecated
@@ -25,11 +24,6 @@ class GormIteratorWriter extends DefaultIteratorWriter {
 
     @Override
     WriteResponse write(RecordIterator recordIterator) {
-        if (gormService) {
-            if (!gormService.ran.get()) {
-                gormService.enableGormFor(gormClass)
-            }
-        }
         assert gormClass: "gormClass must not be null"
 
         def response
