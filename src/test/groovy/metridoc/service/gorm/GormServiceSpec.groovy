@@ -118,15 +118,32 @@ class GormServiceSpec extends Specification {
         !valid
         "nullable" == user.errors.getFieldError("name").code
     }
+
+    void "test retrieving the session factory"() {
+        when:
+        service.enableFor(User)
+        def sessionFactory = service.sessionFactory
+
+        then:
+        noExceptionThrown()
+        sessionFactory
+    }
+
+    void "test for error when getting sessionFactory and enableFor has not been called"() {
+        when:
+        service.sessionFactory
+
+        then:
+        def error = thrown(AssertionError)
+        error.message.contains("[SessionFactory] cannot be retrieved until [enableFor] is called for one or more entities")
+    }
 }
 
 class GormServiceScriptHelper extends Script {
 
     @Override
     def run() {
-        use(MetridocScript) {
-            def gorm = includeService(embeddedDataSource: true, GormService)
-            gorm.enableGormFor(User)
-        }
+        def gorm = includeService(embeddedDataSource: true, GormService)
+        gorm.enableFor(User)
     }
 }
