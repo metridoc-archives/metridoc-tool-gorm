@@ -22,22 +22,20 @@ class MetridocRecordGormSpec extends Specification {
         def script = new Script() {
 
             def run() {
-                use(MetridocScript) {
-                    includeTool(
-                            embeddedDataSource: true,
-                            GormService
-                    ).enableFor(FooBaz)
+                includeTool(
+                        embeddedDataSource: true,
+                        GormService
+                ).enableFor(FooBaz)
 
-                    def writer = createWriter(gormClass: FooBaz, "gorm")
-                    response = writer.write(
-                            toRowIterator([
+                def writer = createWriter(gormClass: FooBaz, "gorm")
+                response = writer.write(
+                        toRowIterator([
                                 [bar: "foo", baz: "fam", populate: false],
                                 [bar: "foo", baz: "fam", populate: false],
                                 [bar: "foo", baz: "fam", populate: false]
-                            ]))
-                    def errors = response.fatalErrors
-                    if(errors) throw errors[0]
-                }
+                        ]))
+                def errors = response.fatalErrors
+                if (errors) throw errors[0]
             }
         }
 
@@ -47,7 +45,7 @@ class MetridocRecordGormSpec extends Specification {
 
         then:
         noExceptionThrown()
-        3 == allFoo.findAll{it.populate == true}.size()
+        3 == allFoo.findAll { it.populate == true }.size()
     }
 }
 
@@ -58,7 +56,7 @@ class FooBaz {
     boolean populate = false
 
     void populate(Record record) {
-        record.body.each {key, value ->
+        record.body.each { key, value ->
             this."$key" = value
         }
         populate = true
