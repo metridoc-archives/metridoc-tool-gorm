@@ -60,6 +60,7 @@ class GormService extends DataSourceService {
 
     @Override
     SessionFactory getSessionFactory() {
-        applicationContext.sessionFactory
+        assert applicationContext : "[SessionFactory] cannot be retrieved until [enableFor] is called for one or more entities"
+        applicationContext.getBean("sessionFactory", SessionFactory)
     }
 }
