@@ -13,7 +13,7 @@ import static metridoc.writers.WrittenRecordStat.Status.*
  * @author Tommy Barker
  */
 class GormIteratorWriterSpec extends Specification {
-    def gService = new GormService(mergeMetridocConfig: false, embeddedDataSource: true)
+    def gService = new GormService(embeddedDataSource: true)
 
     void setup() {
         gService.init()

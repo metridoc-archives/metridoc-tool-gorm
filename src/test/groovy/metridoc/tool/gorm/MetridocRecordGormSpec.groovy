@@ -25,9 +25,8 @@ class MetridocRecordGormSpec extends Specification {
                 use(MetridocScript) {
                     includeTool(
                             embeddedDataSource: true,
-                            mergeMetridocConfig: false,
                             GormService
-                    ).enableGormFor(FooBaz)
+                    ).enableFor(FooBaz)
 
                     def writer = createWriter(gormClass: FooBaz, "gorm")
                     response = writer.write(
