@@ -1,5 +1,6 @@
 package metridoc.tool.gorm
 
+import com.sun.xml.internal.ws.util.StringUtils
 import metridoc.core.RecordLoader
 import metridoc.iterators.Record
 
@@ -48,12 +49,19 @@ class MetridocRecordGorm implements RecordLoader {
 
     @Override
     void populate(Record record) {
-        def dataOfInterest = record.body.findAll { entityInstance.properties.keySet().contains(it.key) }
+
         try {
             if(entityInstance.metaClass.respondsTo(entityInstance, "populate")) {
                 entityInstance.populate(record)
             }
             else {
+                def dataOfInterest = record.body.findAll {
+                    String propertyName = StringUtils.capitalize(it.key)
+                    boolean keep = entityInstance.metaClass.respondsTo(entityInstance, "set${propertyName}",
+                            [it.value.getClass()] as Object[])
+                    return keep
+                }
+
                 dataOfInterest.each {
                     entityInstance."$it.key" = it.value
                 }
