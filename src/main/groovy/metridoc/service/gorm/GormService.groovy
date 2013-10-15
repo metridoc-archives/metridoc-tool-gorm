@@ -63,4 +63,10 @@ class GormService extends DataSourceService {
         assert applicationContext : "[SessionFactory] cannot be retrieved until [enableFor] is called for one or more entities"
         applicationContext.getBean("sessionFactory", SessionFactory)
     }
+
+    @Override
+    void withTransaction(Closure closure) {
+        throw new UnsupportedOperationException("[withTransaction] not supported, use [withTransaction] on loaded " +
+                "entity instead")
+    }
 }
