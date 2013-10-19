@@ -1,6 +1,6 @@
 <grails>
     <resources>
-        <resource>metridoc.tool.gorm.User</resource>
+        <resource></resource>
     </resources>
     <plugins></plugins>
 </grails>

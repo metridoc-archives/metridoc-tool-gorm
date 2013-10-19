@@ -8,7 +8,6 @@ import org.springframework.beans.factory.config.*
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.factory.support.GenericBeanDefinition
 import org.springframework.beans.factory.support.RootBeanDefinition
-import org.springframework.util.ClassUtils
 import org.springframework.util.StringUtils
 
 /**
@@ -16,7 +15,6 @@ import org.springframework.util.StringUtils
  */
 class GormClassLoaderPostProcessor implements BeanFactoryPostProcessor {
     public static List gormClasses = []
-    String gormBeans
     boolean ran = false
 
     @Override
@@ -35,10 +33,13 @@ class GormClassLoaderPostProcessor implements BeanFactoryPostProcessor {
             constructorArgs.addGenericArgumentValue(classes.toArray(new Class[classes.size()]));
             constructorArgs.addGenericArgumentValue(beanFactory.beanClassLoader);
             beanDefinition.constructorArgumentValues = constructorArgs
+
+            def sessionFactoryBeanDefinition = beanFactory.getBeanDefinition("sessionFactory")
+            sessionFactoryBeanDefinition.dependsOn = ["grailsConfigurator"] as String[]
         }
     }
 
-    private void registerDomainBean(final Class<?> entityClass, BeanDefinitionRegistry targetRegistry, String messageSourceRef) {
+    private static void registerDomainBean(final Class<?> entityClass, BeanDefinitionRegistry targetRegistry, String messageSourceRef) {
         GenericBeanDefinition beanDef = new GenericBeanDefinition();
         beanDef.setBeanClass(entityClass);
         beanDef.setScope("prototype");
