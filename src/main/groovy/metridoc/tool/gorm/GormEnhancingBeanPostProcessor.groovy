@@ -21,7 +21,6 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.orm.hibernate.ConfigurableLocalSessionFactoryBean
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormEnhancer
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormValidationApi
-import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.codehaus.groovy.grails.plugins.orm.hibernate.HibernatePluginSupport
 import org.grails.datastore.mapping.validation.ValidationErrors
@@ -32,10 +31,9 @@ import org.springframework.beans.BeanInstantiationException
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
+import org.springframework.validation.Errors
 
 public class GormEnhancingBeanPostProcessor implements InitializingBean, ApplicationContextAware {
-
-    ClosureEventTriggeringInterceptor eventTriggeringInterceptor
 
     SessionFactory sessionFactory
 
@@ -45,9 +43,6 @@ public class GormEnhancingBeanPostProcessor implements InitializingBean, Applica
 
     @Override
     public void afterPropertiesSet() throws Exception {
-
-        eventTriggeringInterceptor.applicationContext = applicationContext
-
         sessionFactory.allClassMetadata.each { className, ClassMetadata metadata ->
             Class mappedClass = metadata.getMappedClass(EntityMode.POJO)
 
